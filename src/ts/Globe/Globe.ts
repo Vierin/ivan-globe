@@ -131,7 +131,7 @@ export class Globe {
                         '#F31D64',
                         5000000,
                         '#FE433C'
-                        ]
+                    ]
                 }
             })
             
