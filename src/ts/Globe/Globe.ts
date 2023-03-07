@@ -92,27 +92,34 @@ export class Globe {
 
     private addCircles(): void {
 
+        console.log(this.dataItems);
+        
+
         globe.on('load', () => {
-            globe.addSource("emissions", {
-                "type": "vector",
-                "url": 'https://climatetrace.sunship.dev/api/assets?globe=1&callback=updateMap'
-            });
-            globe.addLayer({
-                "id": "circles",
-                "type": "circle",
-                "source": "emissions",
-                'source-layer': 'sf2010',
-                'paint': {
-                    'circle-radius': {
-                        'base': 1.75,
-                        'stops': [
-                            [12, 2],
-                            [22, 180]
-                        ]
-                    },
-                    'circle-color': '#ccc'
-                }
+            [...this.dataItems].map((el, key) => {
+                globe.addSource("emissions", {
+                    "type": "geojson",
+                    "data": el
+                });
+
+                globe.addLayer({
+                    "id": `circle-${key}`,
+                    "type": "circle",
+                    "source": "emissions",
+                    'paint': {
+                        'circle-radius': {
+                            'base': 1.75,
+                            'stops': [
+                                [12, 2],
+                                [22, 180]
+                            ]
+                        },
+                        'circle-color': '#000'
+                    }
+                })
             })
+            
+            
 
             // this.loader.animateFinish()
         });
