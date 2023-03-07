@@ -1,0 +1,68 @@
+.loader {
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    background: $color-pale;
+
+
+    &__text {
+        @include font-size(42, 1.2);
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: flex;
+        font-family: $font-bold;
+        overflow: hidden;
+        height: 50px;
+
+        p:last-of-type {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            margin-left: 5px;
+
+            span {
+                display: block;
+                height: 100%;
+            }
+        }
+    }
+
+    &__markers {
+        img {
+            position: absolute;
+            opacity: 0;
+
+            &:nth-child(1) {
+                top: 70%;
+                left: 80%;
+            }
+
+            &:nth-child(2) {
+                top: 30%;
+                left: 15%;
+            }
+
+            &:nth-child(3) {
+                top: 12%;
+                left: 56%;
+            }
+
+            &:nth-child(4) {
+                top: 56%;
+                left: 23%;
+            }
+
+            &:nth-child(5) {
+                top: 86%;
+                left: 10%;
+            }
+            
+            &:nth-child(6) {
+                top: 22%;
+                left: 80%;
+            }
+        }
+    }
+}

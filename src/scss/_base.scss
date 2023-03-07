@@ -1,0 +1,60 @@
+html,
+body {
+    background: $color-bg;
+}
+
+body {
+    position: relative;
+    display: block;
+    font-family: $font-sans;
+    overflow: hidden;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+@keyframes scaleXLeft {
+    0% {
+        transform: scaleX(1);
+        transform-origin: left;
+    }
+
+    45% {
+        transform: scaleX(0);
+        transform-origin: left;
+    }
+
+    55% {
+        transform: scaleX(0);
+        transform-origin: right;
+    }
+
+    100% {
+        transform: scaleX(1);
+        transform-origin: right;
+    }
+}
+
+@keyframes scaleXRight {
+    0% {
+        transform: scaleX(1);
+        transform-origin: right;
+    }
+
+    45% {
+        transform: scaleX(0);
+        transform-origin: right;
+    }
+
+    55% {
+        transform: scaleX(0);
+        transform-origin: left;
+    }
+
+    100% {
+        transform: scaleX(1);
+        transform-origin: left;
+    }
+}
