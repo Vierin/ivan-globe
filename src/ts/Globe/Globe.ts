@@ -92,31 +92,47 @@ export class Globe {
 
     private addCircles(): void {
 
-        console.log(this.dataItems);
-        
+        const obj = {
+            "type": "FeatureCollection",
+            "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+            "features": this.dataItems
+        }
 
         globe.on('load', () => {
-            [...this.dataItems].map((el, key) => {
-                globe.addSource("emissions", {
-                    "type": "geojson",
-                    "data": el
-                });
+            globe.addSource('earthquakes', {
+                type: 'geojson',
+                data: obj as any,
+                cluster: true,
+                clusterMaxZoom: 14,
+                clusterRadius: 10
+            });
 
-                globe.addLayer({
-                    "id": `circle-${key}`,
-                    "type": "circle",
-                    "source": "emissions",
-                    'paint': {
-                        'circle-radius': {
-                            'base': 1.75,
-                            'stops': [
-                                [12, 2],
-                                [22, 180]
-                            ]
-                        },
-                        'circle-color': '#000'
-                    }
-                })
+            globe.addLayer({
+                "id": `circle`,
+                "type": "circle",
+                "source": "earthquakes",
+                'filter': ['has', 'emissions'],
+                'paint': {
+                    "circle-radius": 7,
+                    // "circle-color": "#5b94c6",
+                    'circle-color': [
+                        'step',
+                        ['get', 'emissions'],
+                        '#0095EF',
+                        100000,
+                        '#3C50B1',
+                        500000,
+                        '#273FB1',
+                        1000000,
+                        '#6A38B3',
+                        2000000,
+                        '#A224AD',
+                        3000000,
+                        '#F31D64',
+                        5000000,
+                        '#FE433C'
+                        ]
+                }
             })
             
             
