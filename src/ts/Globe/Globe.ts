@@ -108,22 +108,59 @@ export class Globe {
     }
 
     private addCircles(): void {
-        globe.addSource('earthquakes', {
+        globe.addSource('emissions', {
             type: 'geojson',
             data: this.obj as any,
             cluster: true,
             clusterMaxZoom: 14,
-            clusterRadius: 10
+            clusterRadius: 50
         });
 
         globe.addLayer({
-            "id": `circle`,
+            id: 'clusters',
+            type: 'circle',
+            source: 'emissions',
+            filter: ['has', 'point_count'],
+            paint: {
+            'circle-color': [
+                "interpolate",
+                ['linear'],
+                ['get', 'point_count'],
+                0,
+                '#00A6FF',
+                200,
+                '#1B0FFF'
+            ],
+            'circle-radius': [
+                "interpolate",
+                ['linear'],
+                ['get', 'point_count'],
+                    10,
+                    10,
+                    100,
+                    40
+                ]
+            }
+        });
+
+        globe.addLayer({
+            id: 'cluster-count',
+            type: 'symbol',
+            source: 'emissions',
+            filter: ['has', 'point_count'],
+            layout: {
+                'text-field': ['get', 'point_count_abbreviated'],
+                'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+                'text-size': 12
+            }
+        });
+
+        globe.addLayer({
+            "id": `unclustered-point`,
             "type": "circle",
-            "source": "earthquakes",
-            'filter': ['has', 'emissions'],
-            'paint': {
-                "circle-radius": 7,
-                // "circle-color": "#5b94c6",
+            "source": "emissions",
+            'filter': ['!', ['has', 'point_count']],
+            'paint': { 
                 'circle-color': [
                     "interpolate",
                     ['linear'],
@@ -132,7 +169,7 @@ export class Globe {
                     '#00A6FF',
                     this.maxData,
                     '#FF0F23'
-                ]
+                ],
             }
         })
   
