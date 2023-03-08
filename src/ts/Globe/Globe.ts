@@ -29,6 +29,8 @@ export class Globe {
     private settings: IMapSettings;
     private wrap: HTMLElement;
     private dataItems: [];
+    private obj: {};
+    private maxData: number;
 
     constructor(wrap: HTMLElement) {
         this.wrap = wrap;
@@ -45,13 +47,10 @@ export class Globe {
             maxZoom: 6,
             dragRotate: false,
             // @ts-ignore
-            // maxBounds: [[-169, -69], [250, 82]],
             token
         };
 
         this.init();
-        // this.loader = new Loader(document.querySelector('.js-loader'));
-        // this.loader.animateItems();
     }
 
   
@@ -60,7 +59,14 @@ export class Globe {
         await this.getData();
         
         this.initGlobe();
-        this.addCircles();
+
+        this.obj = {
+            "type": "FeatureCollection",
+            "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+            "features": this.dataItems
+        }
+
+        globe.on('load', () => { this.addCircles() });
     }
 
     public getData = async () => {
@@ -70,6 +76,17 @@ export class Globe {
         } catch (error) {
             throw new Error(error);
         }
+
+        this.checkMinMaxEmissions();
+    }
+
+    private checkMinMaxEmissions(): void {
+        const emissions = [];
+        this.dataItems.forEach(el => {
+            emissions.push((el as any).properties.emissions)
+        });
+
+        this.maxData = Math.max(...emissions);
     }
 
     private initGlobe(): void {
@@ -91,54 +108,33 @@ export class Globe {
     }
 
     private addCircles(): void {
-
-        const obj = {
-            "type": "FeatureCollection",
-            "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
-            "features": this.dataItems
-        }
-
-        globe.on('load', () => {
-            globe.addSource('earthquakes', {
-                type: 'geojson',
-                data: obj as any,
-                cluster: true,
-                clusterMaxZoom: 14,
-                clusterRadius: 10
-            });
-
-            globe.addLayer({
-                "id": `circle`,
-                "type": "circle",
-                "source": "earthquakes",
-                'filter': ['has', 'emissions'],
-                'paint': {
-                    "circle-radius": 7,
-                    // "circle-color": "#5b94c6",
-                    'circle-color': [
-                        'step',
-                        ['get', 'emissions'],
-                        '#0095EF',
-                        100000,
-                        '#3C50B1',
-                        500000,
-                        '#273FB1',
-                        1000000,
-                        '#6A38B3',
-                        2000000,
-                        '#A224AD',
-                        3000000,
-                        '#F31D64',
-                        5000000,
-                        '#FE433C'
-                    ]
-                }
-            })
-            
-            
-
-            // this.loader.animateFinish()
+        globe.addSource('earthquakes', {
+            type: 'geojson',
+            data: this.obj as any,
+            cluster: true,
+            clusterMaxZoom: 14,
+            clusterRadius: 10
         });
+
+        globe.addLayer({
+            "id": `circle`,
+            "type": "circle",
+            "source": "earthquakes",
+            'filter': ['has', 'emissions'],
+            'paint': {
+                "circle-radius": 7,
+                // "circle-color": "#5b94c6",
+                'circle-color': [
+                    "interpolate",
+                    ['linear'],
+                    ['get', 'emissions'],
+                    0,
+                    '#00A6FF',
+                    this.maxData,
+                    '#FF0F23'
+                ]
+            }
+        })
   
     }
 
